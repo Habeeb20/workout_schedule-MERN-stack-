@@ -1,4 +1,4 @@
-require('dotenv').config
+require('dotenv').config();
 const express = require('express')
 const app = express()
 const mongoose = require("mongoose")
@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 4000;
 
 const {logEvents, loggers} = require('./middleware/logger')
 const workout = require('./route/workout')
+const userWorkout = require('./route/user')
 const corsOptions = require('./config/corsOptions')
 
 
@@ -22,6 +23,15 @@ app.use(express.json())
 app.use(express.static('public'))
 
 app.use("/api/workout", workout)
+app.use("/api/user", userWorkout)
+
+
+
+
+
+
+
+
 mongoose.connection.once('open', () => {
     console.log("connected")
     app.listen(PORT, () => console.log(`server is listening on port ${PORT}`))
