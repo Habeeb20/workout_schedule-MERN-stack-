@@ -1,11 +1,15 @@
 import React from "react";
 import { useState } from "react";
 import { useWorkoutContext } from "../hooks/useWorkoutContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const Workoutform = () => {
   const { dispatch } = useWorkoutContext()
+  const {user} = useAuthContext()
+
+
   const [title, setTitle] = useState("");
-  const [loads, setLoad] = useState("");
+  const [loads, setLoads] = useState("");
   const [reps, setReps] = useState("");
   const [error, setError] = useState(null);
   const [emptyField, setEmptyField] = useState([])
@@ -13,13 +17,19 @@ const Workoutform = () => {
   const handleSubmit = async(e) => {
     e.preventDefault()
 
+    if(!user){
+      setError('You must be logged in')
+      return
+    }
+
     const workout = {title, loads, reps}
 
     const response = await fetch('/api/workout', {
         method:'POST',
         body: JSON.stringify(workout),
         headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token }`
         }
     })
     const json = await response.json()
@@ -31,7 +41,7 @@ const Workoutform = () => {
     }
     if(response.ok){
         setTitle('')
-        setLoad('')
+        setLoads('')
         setReps('')
         setError(null)
         setEmptyField([])
@@ -50,15 +60,15 @@ const Workoutform = () => {
         type="text"
         onChange={(e) => setTitle(e.target.value)}
         value={title}
-        className={emptyField.includes(title) ? 'error' : ''}
+        className={emptyField?.includes('title') ? 'error' : ''}
       />
 
       <label htmlFor="">Load (in kg):</label>
       <input
         type="number"
-        onChange={(e) => setLoad(e.target.value)}
+        onChange={(e) => setLoads(e.target.value)}
         value={loads}
-        className={emptyField.includes(loads) ? 'error' : ''}
+        className={emptyField?.includes('loads') ? 'error' : ''}
       />
 
       <label htmlFor="">Reps:</label>
@@ -66,7 +76,7 @@ const Workoutform = () => {
         type="text"
         onChange={(e) => setReps(e.target.value)}
         value={reps}
-        className={emptyField.includes(reps) ? 'error' : ''}
+        className={emptyField?.includes('reps') ? 'error' : ''}
       />
 
       <button>Add workout</button>
