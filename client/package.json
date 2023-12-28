@@ -6,7 +6,7 @@
  
   "private": true,
  
-  "proxy": "http://localhost:4000",
+  "proxy": "https://backendgym.onrender.com",
  
   "dependencies": {
  
